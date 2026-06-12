@@ -27,6 +27,9 @@ SteamInstaller_Setup.exe
 # NuGet packages
 **/packages/*
 
+# Project planning (keep local only)
+初步执行方案.md
+
 # OS files
 Thumbs.db
 [Dd]esktop.ini
