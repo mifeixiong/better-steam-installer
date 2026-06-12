@@ -1,0 +1,15 @@
+﻿<!--
+  App.xaml —— WPF 应用程序全局资源定义。
+  包含全局 Button 默认样式（内边距和手型光标）。
+-->
+<Application x:Class="SteamInstaller.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <!-- 全局 Button 默认样式 -->
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="10,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Application.Resources>
+</Application>

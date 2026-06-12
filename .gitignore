@@ -1,0 +1,32 @@
+# Build outputs
+bin/
+obj/
+publish/
+
+# Executables
+*.exe
+*.dll
+*.pdb
+*.apphost
+
+# Logs
+*.log
+logs/
+
+# NSIS output
+SteamInstaller_Setup.exe
+
+# IDE
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+
+# NuGet packages
+**/packages/*
+
+# OS files
+Thumbs.db
+[Dd]esktop.ini

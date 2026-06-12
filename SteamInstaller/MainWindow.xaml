@@ -1,0 +1,371 @@
+﻿<!--
+  MainWindow.xaml —— 主窗口 UI 布局。
+  使用 MVVM 模式，通过 DataContext 绑定到 MainViewModel。
+  包含：自定义标题栏、安装路径选择、进度条、操作按钮和实时日志面板。
+-->
+<Window x:Class="SteamInstaller.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="Steam 自动下载安装加速器" Height="680" Width="700"
+        ResizeMode="CanResize" MinHeight="540" MinWidth="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F6FA"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing">
+    <!-- 自定义窗口边框（圆角、可拖拽调整大小、无系统标题按钮） -->
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="54" ResizeBorderThickness="6"
+                      GlassFrameThickness="1" CornerRadius="8"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+    <Window.Resources>
+        <!-- ========== 调色板 ========== -->
+        <SolidColorBrush x:Key="AccentBrush" Color="#2196F3"/>
+        <SolidColorBrush x:Key="AccentDark" Color="#1976D2"/>
+        <SolidColorBrush x:Key="BgBrush" Color="#F5F6FA"/>
+        <SolidColorBrush x:Key="CardBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#1a1a2e"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#555"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>
+        <SolidColorBrush x:Key="ProgressBg" Color="#E8E8F0"/>
+        <SolidColorBrush x:Key="LogBg" Color="#2B2B3D"/>
+        <SolidColorBrush x:Key="LogText" Color="#C8C8DC"/>
+        <SolidColorBrush x:Key="SuccessBrush" Color="#4CAF50"/>
+        <SolidColorBrush x:Key="SuccessDark" Color="#388E3C"/>
+        <SolidColorBrush x:Key="DangerBrush" Color="#EF5350"/>
+
+        <!-- ========== 按钮样式：主按钮（蓝色实心） ========== -->
+        <Style TargetType="Button" x:Key="PrimaryButton">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Width" Value="140"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource AccentDark}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#B0BEC5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ========== 按钮样式：次按钮（透明边框） ========== -->
+        <Style TargetType="Button" x:Key="SecondaryButton">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"
+                                Padding="14,0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F0F0F5"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ========== 按钮样式：成功按钮（绿色实心） ========== -->
+        <Style TargetType="Button" x:Key="SuccessButton">
+            <Setter Property="Background" Value="{StaticResource SuccessBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Width" Value="110"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource SuccessDark}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#B0BEC5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ========== 按钮样式：危险按钮（红色文字） ========== -->
+        <Style TargetType="Button" x:Key="DangerButton">
+            <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"
+                                Padding="14,0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FFF5F5"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ========== 进度条样式（蓝色圆角） ========== -->
+        <Style TargetType="ProgressBar">
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="Background" Value="{StaticResource ProgressBg}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                            <Border x:Name="PART_Track" CornerRadius="4">
+                                <Border x:Name="PART_Indicator" CornerRadius="4"
+                                        Background="{StaticResource AccentBrush}"
+                                        HorizontalAlignment="Left"/>
+                            </Border>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Padding="6">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- ========== 自定义标题栏 ========== -->
+            <Border Grid.Row="0" Background="{StaticResource CardBrush}"
+                    Padding="20,10" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"
+                    MinHeight="54">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 拖拽区域 + 应用图标 + 标题 -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal"
+                                Background="Transparent" VerticalAlignment="Center">
+                        <!-- 图标区域：先显示回退图标，加载成功后替换为 Steam favicon -->
+                        <Grid Width="32" Height="32" Margin="0,0,12,0">
+                            <Border x:Name="FallbackIcon" Background="{StaticResource AccentBrush}" CornerRadius="8">
+                                <TextBlock Text="S" FontSize="16" FontWeight="Bold"
+                                           Foreground="White" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                            </Border>
+                            <Image x:Name="SteamIcon" Width="32" Height="32"
+                                   Stretch="Uniform" Visibility="Collapsed"/>
+                        </Grid>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Steam 自动下载安装加速器" FontSize="17" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimary}"/>
+                            <TextBlock Text="一键下载 · 加速安装 · 自动配置" FontSize="12"
+                                       Foreground="{StaticResource TextSecondary}" Margin="0,1,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- 窗口控制按钮 -->
+                    <Border Grid.Column="1" CornerRadius="8" Padding="2"
+                            Background="{StaticResource BgBrush}" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Width="32" Height="28" Click="MinimizeWindow_Click"
+                                    Cursor="Hand" Background="Transparent" BorderThickness="0"
+                                    shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="btnBorder" Background="Transparent" CornerRadius="6">
+                                            <Path x:Name="icon" Data="M3,13 L21,13" Stroke="{StaticResource TextPrimary}"
+                                                  StrokeThickness="1.5" HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" Width="10" Height="2"
+                                                  Stretch="Fill"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="btnBorder" Property="Background" Value="#E8E8F0"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button Width="32" Height="28" Click="CloseWindow_Click"
+                                    Cursor="Hand" Background="Transparent" BorderThickness="0"
+                                    shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="btnBorder" Background="Transparent" CornerRadius="6">
+                                            <Path x:Name="icon" Data="M6,6 L18,18 M18,6 L6,18"
+                                                  Stroke="{StaticResource TextSecondary}"
+                                                  StrokeThickness="1.5" HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" Width="10" Height="10"
+                                                  Stretch="Fill"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="btnBorder" Property="Background" Value="#FFE0E0"/>
+                                                <Setter TargetName="icon" Property="Stroke" Value="{StaticResource DangerBrush}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- ========== 主体内容区 ========== -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="14,14,14,0">
+
+                    <!-- 安装路径选择卡片 -->
+                    <Border Background="{StaticResource CardBrush}" CornerRadius="8" Padding="16"
+                            Margin="0,0,0,10" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                        <StackPanel>
+                            <TextBlock Text="安装路径" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimary}" Margin="0,0,0,8"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0"
+                                         Text="{Binding InstallPath, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="13" Padding="10,8" Margin="0,0,10,0"
+                                         Background="{StaticResource BgBrush}"
+                                         BorderBrush="{StaticResource BorderBrush}"
+                                         BorderThickness="1"
+                                         IsEnabled="{Binding IsNotRunning}">
+                                    <TextBox.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="6"/>
+                                        </Style>
+                                    </TextBox.Resources>
+                                </TextBox>
+                                <Button Grid.Column="1" Content="浏览..." Width="70"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Command="{Binding BrowseCommand}"
+                                        IsEnabled="{Binding IsNotRunning}"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 加速保留选项 -->
+                    <Border Background="{StaticResource CardBrush}" CornerRadius="8" Padding="16"
+                            Margin="0,0,0,10" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                        <CheckBox Content="安装后保持网络加速（不恢复 Hosts）"
+                                  IsChecked="{Binding KeepAcceleration}"
+                                  IsEnabled="{Binding IsNotRunning}"
+                                  FontSize="13"
+                                  Foreground="{StaticResource TextPrimary}"/>
+                    </Border>
+
+                    <!-- 安装进度卡片 -->
+                    <Border Background="{StaticResource CardBrush}" CornerRadius="8" Padding="16"
+                            Margin="0,0,0,10" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="安装进度" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextPrimary}"/>
+                                <TextBlock Grid.Column="1" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{StaticResource AccentBrush}"
+                                           Text="{Binding ProgressValue, StringFormat={}{0:F0}%}"/>
+                            </Grid>
+                            <ProgressBar Value="{Binding ProgressValue}" Minimum="0" Maximum="100"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 操作按钮区 -->
+                    <Border Background="{StaticResource CardBrush}" CornerRadius="8" Padding="16"
+                            Margin="0,0,0,10" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="开始加速安装" Style="{StaticResource PrimaryButton}"
+                                    Command="{Binding StartCommand}"/>
+                            <Button Content="取消" Style="{StaticResource DangerButton}"
+                                    Command="{Binding CancelCommand}" Margin="10,0,0,0"/>
+                            <Separator Width="1" Margin="16,6" Background="{StaticResource BorderBrush}"/>
+                            <Button Content="启动 Steam" Style="{StaticResource SuccessButton}"
+                                    Command="{Binding LaunchSteamCommand}"/>
+                            <Button Content="查看日志" Style="{StaticResource SecondaryButton}"
+                                    Command="{Binding OpenLogCommand}" Margin="10,0,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 状态文本 -->
+                    <Border Background="{StaticResource CardBrush}" CornerRadius="8" Padding="16"
+                            Margin="0,0,0,10" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                        <TextBlock Text="{Binding StatusText}" FontSize="13"
+                                   TextWrapping="Wrap" Foreground="{StaticResource TextSecondary}"/>
+                    </Border>
+
+                    <!-- 实时日志面板（深色终端风格） -->
+                    <Border Background="{StaticResource LogBg}" CornerRadius="8" Padding="12"
+                            Margin="0,0,0,14" Height="180">
+                        <ScrollViewer x:Name="LogScrollViewer">
+                            <ItemsControl ItemsSource="{Binding LogEntries}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" FontFamily="Consolas" FontSize="12"
+                                                   Margin="2,1" TextWrapping="Wrap"
+                                                   Foreground="{StaticResource LogText}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</Window>
