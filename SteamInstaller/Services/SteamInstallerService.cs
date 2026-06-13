@@ -21,7 +21,7 @@ namespace SteamInstaller.Services;
 /// </summary>
 public class SteamInstallerService : ISteamInstallerService
 {
-    private const string SteamSetupUrl = "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe";
+    private const string SteamSetupUrl = "https://cdn.steamstatic.com/client/installer/SteamSetup.exe";
 
     /// <summary>安装 Steam 最低所需磁盘空间：2 GB。</summary>
     private const long RequiredDiskSpace = 2L * 1024 * 1024 * 1024;
