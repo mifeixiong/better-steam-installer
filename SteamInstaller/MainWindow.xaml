@@ -7,7 +7,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
-        Title="Steam 自动下载安装加速器" Height="680" Width="700"
+        Title="Steam 自动下载安装加速器 v1.0.1" Height="680" Width="700"
         ResizeMode="CanResize" MinHeight="540" MinWidth="600"
         WindowStartupLocation="CenterScreen"
         Background="#F5F6FA"
@@ -205,7 +205,7 @@
                                    Stretch="Uniform" Visibility="Collapsed"/>
                         </Grid>
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="Steam 自动下载安装加速器" FontSize="17" FontWeight="SemiBold"
+                            <TextBlock Text="Steam 自动下载安装加速器 v1.0.1" FontSize="17" FontWeight="SemiBold"
                                        Foreground="{StaticResource TextPrimary}"/>
                             <TextBlock Text="一键下载 · 加速安装 · 自动配置" FontSize="12"
                                        Foreground="{StaticResource TextSecondary}" Margin="0,1,0,0"/>

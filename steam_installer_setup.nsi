@@ -1,11 +1,11 @@
-; ============================================================
+﻿; ============================================================
 ; NSIS 安装脚本 —— 将 BetterSteamInstaller 打包为 Windows 安装程序
 ; 使用 Modern UI 2 (MUI2) 界面，支持开始菜单/桌面快捷方式和卸载
 ; ============================================================
 
 ; ---------- 产品元数据 ----------
 !define PRODUCT_NAME "Steam 安装加速器"
-!define PRODUCT_VERSION "1.0.0"
+!define PRODUCT_VERSION "1.0.1"
 !define PRODUCT_PUBLISHER "Steam Installer"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\SteamInstaller.exe"
 
